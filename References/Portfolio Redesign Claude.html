@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naufal Rifqi — UI/UX & Graphic Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & TOKENS ─────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0f0e0c;--paper:#f4f0e8;--cream:#ede8dc;
+  --accent:#c8401a;--accent2:#3a5a40;--muted:#7a776e;
+  --card:#ffffff;--border:rgba(15,14,12,0.1);
+  --primary-font:'Inter',sans-serif;--secondary-font:'Open Sans',sans-serif;
+  --nav-h:68px;
+}
+/* Dark mode tokens */
+[data-theme="dark"]{
+  --ink:#f0ede6;--paper:#141210;--cream:#1e1c19;
+  --muted:#9a9690;--card:#1e1c19;--border:rgba(240,237,230,0.1);
+}
+[data-theme="dark"] .contact-link{background:var(--cream)}
+[data-theme="dark"] .contact-link:hover{background:#2a2825}
+[data-theme="dark"] .process-step{background:var(--cream)}
+[data-theme="dark"] .cs-stat{background:var(--cream)}
+[data-theme="dark"] .cs-highlight{background:var(--cream)}
+[data-theme="dark"] .hero-bio{color:#b0ada6}
+[data-theme="dark"] .hero-name em,[data-theme="dark"] .contact-left h2 em{color:#ff9478}
+[data-theme="dark"] .cs-p{color:#c0bdb6}
+[data-theme="dark"] #framework .skill-card{background:#0a0908}
+[data-theme="dark"] #framework .skill-card:hover{background:#111009}
+[data-theme="dark"] .skills-grid{background:rgba(240,237,230,.06);border-color:rgba(240,237,230,.06)}
+[data-theme="dark"] footer{background:#0a0908}
+[data-theme="dark"] .contact-right{background:#0a0908}
+[data-theme="dark"] .work-card{background:#1e1c19}
+[data-theme="dark"] nav{background:rgba(20,18,16,0.92)}
+[data-theme="dark"] .mob-menu{background:#141210}
+
+html{scroll-behavior:smooth}
+body{font-family:var(--secondary-font);background:var(--paper);color:var(--ink);overflow-x:hidden;cursor:none;transition:background .3s,color .3s}
+@media(max-width:767px){body{cursor:auto}}
+
+/* ─── PAGES ──────────────────────────────────────────── */
+.page{display:none;min-height:100vh}
+.page.active{display:block;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ─── CURSOR (desktop only) ──────────────────────────── */
+#cursor,#cursor-ring{pointer-events:none;position:fixed;top:0;left:0;border-radius:50%;z-index:9999;transform:translate(-50%,-50%)}
+#cursor{width:12px;height:12px;background:var(--accent);transition:width .2s,height .2s}
+#cursor-ring{width:36px;height:36px;border:1.5px solid var(--accent);z-index:9998;transition:width .3s,height .3s,opacity .3s}
+@media(max-width:767px){#cursor,#cursor-ring{display:none}}
+
+/* Keep the hovered portfolio card clear while the rest of the page dims. */
+.portfolio-dimmer{position:fixed;inset:0;z-index:400;pointer-events:none}
+.portfolio-dimmer-segment{position:absolute;background:transparent;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);opacity:0;transition:opacity .3s ease}
+body.card-hovering .portfolio-dimmer-segment{opacity:1}
+
+/* ─── NAV ────────────────────────────────────────────── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 4vw;
+  background:rgba(244,240,232,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  transition:background .3s,border-color .3s;
+}
+.nav-logo{font-family:var(--primary-font);font-size:1.2rem;letter-spacing:-.02em;cursor:pointer;flex-shrink:0}
+.nav-logo span{color:var(--accent);font-style:italic}
+
+/* Desktop nav links */
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-links a{font-size:.82rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-decoration:none;position:relative;transition:color .2s;cursor:pointer;white-space:nowrap}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:-3px;width:0;height:1.5px;background:var(--accent);transition:width .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--ink)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+
+/* Theme toggle */
+.theme-toggle{
+  width:44px;height:24px;background:var(--cream);border:1.5px solid var(--border);
+  border-radius:999px;cursor:pointer;position:relative;flex-shrink:0;
+  transition:background .3s,border-color .3s;
+  display:flex;align-items:center;padding:0 3px;
+}
+.theme-toggle .knob{
+  width:16px;height:16px;background:var(--ink);border-radius:50%;
+  transition:transform .3s,background .3s;flex-shrink:0;
+}
+[data-theme="dark"] .theme-toggle .knob{transform:translateX(20px);background:var(--accent)}
+.theme-toggle .icon-sun,.theme-toggle .icon-moon{
+  position:absolute;font-size:.65rem;line-height:1;top:50%;transform:translateY(-50%);
+  transition:opacity .2s;
+}
+.theme-toggle .icon-sun{right:5px;opacity:1}
+.theme-toggle .icon-moon{left:5px;opacity:0}
+[data-theme="dark"] .theme-toggle .icon-sun{opacity:0}
+[data-theme="dark"] .theme-toggle .icon-moon{opacity:1}
+
+/* Nav right group */
+.nav-right{display:flex;align-items:center;gap:1.5rem}
+
+/* Hamburger button */
+.hamburger{
+  display:none;flex-direction:column;gap:5px;cursor:pointer;
+  background:none;border:none;padding:4px;
+}
+.hamburger span{
+  display:block;width:22px;height:2px;background:var(--ink);
+  border-radius:2px;transition:transform .3s,opacity .3s,background .3s;
+}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* Mobile menu overlay */
+.mob-menu{
+  display:none;position:fixed;top:var(--nav-h);left:0;right:0;bottom:0;
+  background:var(--paper);z-index:250;
+  flex-direction:column;justify-content:center;align-items:center;gap:2.5rem;
+  transition:background .3s;
+}
+.mob-menu.open{display:flex;animation:fadeIn .25s ease}
+.mob-menu a{
+  font-family:var(--primary-font);font-size:2.2rem;letter-spacing:-.03em;
+  color:var(--ink);text-decoration:none;cursor:pointer;
+  transition:color .2s;
+}
+.mob-menu a:hover{color:var(--accent)}
+.mob-menu .mob-divider{width:40px;height:1.5px;background:var(--border)}
+
+/* ─── BUTTONS ────────────────────────────────────────── */
+.btn-primary{display:inline-flex;align-items:center;gap:.5rem;background:var(--ink);color:var(--paper);padding:.85rem 1.75rem;border-radius:4px;font-size:.9rem;font-weight:500;text-decoration:none;border:none;font-family:var(--secondary-font);cursor:pointer;transition:background .2s,transform .2s;white-space:nowrap}
+.btn-primary:hover{background:var(--accent);transform:translateY(-2px)}
+.btn-outline{display:inline-flex;align-items:center;gap:.5rem;border:1.5px solid var(--ink);color:var(--ink);padding:.85rem 1.75rem;border-radius:4px;font-size:.9rem;font-weight:500;text-decoration:none;background:none;font-family:var(--secondary-font);cursor:pointer;transition:border-color .2s,color .2s,transform .2s;white-space:nowrap}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.back-btn{display:inline-flex;align-items:center;gap:.5rem;font-size:.82rem;font-weight:500;color:var(--muted);cursor:pointer;transition:color .2s;letter-spacing:.06em;text-transform:uppercase;border:none;background:none;font-family:var(--secondary-font);padding:0;margin-bottom:2rem}
+.back-btn:hover{color:var(--accent)}
+
+/* ─── SECTION COMMONS ────────────────────────────────── */
+section{padding:clamp(4rem,10vw,8rem) 4vw}
+.section-header{display:flex;align-items:baseline;gap:1rem;margin-bottom:3.5rem;border-bottom:1px solid var(--border);padding-bottom:1.2rem;flex-wrap:wrap}
+.section-title{font-family:var(--primary-font);font-size:clamp(2rem,4vw,3rem);letter-spacing:-.03em;line-height:1}
+.section-num{font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-left:auto}
+
+/* ─── REVEALS ────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* ─── HERO ───────────────────────────────────────────── */
+#bio{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr;
+  padding-top:var(--nav-h);
+}
+.hero-left{
+  width:100%;max-width:1240px;margin:0 auto;
+  padding:clamp(3rem,7vw,7rem) 8vw;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.hero-tag{font-size:.72rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem}
+.hero-tag::before{content:'';width:28px;height:1.5px;background:var(--accent);flex-shrink:0}
+.hero-name{font-family:var(--primary-font);font-size:clamp(2.8rem,5.5vw,5.5rem);line-height:1.05;letter-spacing:-.03em;margin-bottom:1.5rem;font-weight:normal}
+.hero-name em{color:var(--accent)}
+.hero-bio{font-size:clamp(.95rem,1.4vw,1.1rem);line-height:1.7;color:#4a4740;max-width:480px;margin-bottom:2rem}
+.hero-pill{display:inline-flex;align-items:center;gap:.5rem;background:var(--cream);border:1px solid var(--border);border-radius:999px;padding:.5rem 1rem .5rem .6rem;font-size:.8rem;font-weight:500;color:var(--accent2);margin-bottom:2.5rem;width:fit-content}
+.hero-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);flex-shrink:0;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap}
+
+/* ─── FRAMEWORK ──────────────────────────────────────── */
+#framework{background:var(--ink);color:var(--paper);transition:background .3s}
+#framework .section-title{color:var(--paper)}
+#framework .section-num{color:rgba(240,237,230,.4)}
+#framework .section-header{border-color:rgba(240,237,230,.1)}
+[data-theme="dark"] #framework{background:#1e1c19;color:var(--ink)}
+[data-theme="dark"] #framework .section-title{color:var(--ink)}
+[data-theme="dark"] #framework .section-num{color:rgba(240,237,230,.55)}
+[data-theme="dark"] #framework .section-header{border-color:rgba(240,237,230,.14)}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5px;background:rgba(240,237,230,.1);border:1.5px solid rgba(240,237,230,.1)}
+.skill-card{background:var(--ink);padding:2.5rem 2rem;position:relative;overflow:hidden;transition:background .3s}
+.skill-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;background:var(--accent);transition:height .4s}
+.skill-card:hover{background:#1a1917}
+.skill-card:hover::before{height:100%}
+.skill-icon{font-size:1.8rem;margin-bottom:1.25rem;display:block}
+.skill-name{font-family:var(--primary-font);font-size:1.35rem;margin-bottom:.75rem;letter-spacing:-.02em}
+.skill-desc{font-size:.85rem;line-height:1.65;color:rgba(240,237,230,.55)}
+.skill-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.5rem}
+.skill-tag{font-size:.68rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;border:1px solid rgba(240,237,230,.2);border-radius:2px;padding:.28rem .55rem;color:rgba(240,237,230,.5)}
+
+/* ─── WORKS ──────────────────────────────────────────── */
+#works{background:var(--cream);transition:background .3s}
+.works-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1.25rem}
+.work-card{background:var(--card);border-radius:8px;overflow:hidden;color:inherit;display:flex;flex-direction:column;border:1px solid var(--border);transition:transform .35s cubic-bezier(.25,.46,.45,.94),box-shadow .35s,background .3s,border-color .3s;cursor:pointer;text-decoration:none}
+.work-card:hover{transform:none;box-shadow:none}
+.work-card.featured{grid-column:span 7}
+.work-card.side{grid-column:span 5}
+.work-card.full-row{grid-column:span 6}
+.work-img{aspect-ratio:16/9;background:linear-gradient(135deg,#ddd8cc,#c5bfb0);position:relative;overflow:hidden;flex-shrink:0}
+.work-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.work-card:hover .work-img img{transform:none}
+.work-img-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--primary-font);font-size:3rem;color:rgba(15,14,12,.12);font-style:italic}
+.work-tag-bar{position:absolute;top:1rem;left:1rem;display:flex;gap:.4rem;flex-wrap:wrap}
+.coming-soon-tag{position:absolute;top:1rem;right:1rem;z-index:2;background:var(--paper);color:var(--ink);border:1px solid var(--border);border-radius:999px;padding:.35rem .7rem;font:600 .65rem/1 var(--primary-font);letter-spacing:.08em;text-transform:uppercase}
+.coming-soon-card{cursor:default}
+.coming-soon-card:hover{transform:translateY(-3px)}
+.tag-chip{font-size:.68rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:.28rem .65rem;border-radius:2px}
+.tag-chip.green{background:var(--accent2)}
+.work-body{padding:1.5rem;flex:1;display:flex;flex-direction:column}
+.work-title{font-family:var(--primary-font);font-size:clamp(1rem,1.8vw,1.45rem);letter-spacing:-.02em;line-height:1.2;margin-bottom:.65rem}
+.work-desc{font-size:.85rem;line-height:1.65;color:var(--muted);flex:1}
+.work-footer{display:flex;align-items:center;justify-content:space-between;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--muted);font-weight:500}
+.work-arrow{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:background .2s,border-color .2s,color .2s;flex-shrink:0}
+.work-card:hover .work-arrow{background:transparent;border-color:var(--border);color:inherit}
+
+/* ─── CONTACT ────────────────────────────────────────── */
+#reach{background:var(--paper);border-top:1px solid var(--border);transition:background .3s}
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+.contact-left h2{font-family:var(--primary-font);font-size:clamp(2rem,4.5vw,4.5rem);letter-spacing:-.04em;line-height:1.05;margin-bottom:1.5rem}
+.contact-left h2 em{color:var(--accent);font-style:italic}
+.contact-left p{font-size:1rem;line-height:1.7;color:var(--muted);max-width:400px;margin-bottom:2.5rem}
+.contact-links{display:flex;flex-direction:column;gap:1rem}
+.contact-link{display:flex;align-items:center;gap:1rem;text-decoration:none;color:inherit;padding:1.1rem 1.4rem;border:1px solid var(--border);border-radius:8px;background:var(--cream);transition:border-color .2s,transform .2s,background .2s;font-weight:500}
+.contact-link:hover{border-color:var(--accent);background:var(--card);transform:translateX(4px)}
+.cl-icon{width:38px;height:38px;background:var(--ink);color:var(--paper);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;transition:background .3s}
+.cl-label{font-size:.75rem;color:var(--muted);font-weight:400}
+.cl-text{font-size:.9rem}
+.contact-right{background:var(--ink);border-radius:12px;padding:2.25rem;color:var(--paper);position:sticky;top:calc(var(--nav-h) + 1.5rem);transition:background .3s}
+.contact-right h3{font-family:var(--primary-font);font-size:1.5rem;margin-bottom:1.75rem;letter-spacing:-.02em}
+.form-group{margin-bottom:1.1rem}
+.form-group label{display:block;font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:rgba(240,237,230,.5);margin-bottom:.4rem}
+.form-group input,.form-group textarea{width:100%;background:rgba(240,237,230,.07);border:1px solid rgba(240,237,230,.15);border-radius:6px;padding:.8rem 1rem;font-family:var(--secondary-font);font-size:.9rem;color:var(--paper);outline:none;transition:border-color .2s;resize:none}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group input::placeholder,.form-group textarea::placeholder{color:rgba(240,237,230,.3)}
+.form-submit{width:100%;background:var(--accent);color:white;border:none;padding:.95rem;border-radius:6px;font-family:var(--secondary-font);font-size:.9rem;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:opacity .2s,transform .2s;margin-top:.5rem}
+.form-submit:hover{opacity:.88;transform:translateY(-1px)}
+.form-success{display:none;text-align:center;padding:2rem 0}
+.form-success .check{font-size:2.5rem;margin-bottom:1rem}
+
+footer{background:var(--ink);color:rgba(240,237,230,.4);padding:1.75rem 4vw;display:flex;align-items:center;justify-content:space-between;font-size:.8rem;flex-wrap:wrap;gap:.5rem;transition:background .3s}
+footer a{color:inherit;text-decoration:none}
+footer strong{color:var(--paper)}
+
+/* ─── CASE STUDY ─────────────────────────────────────── */
+.case-study-page{padding-top:var(--nav-h)}
+.cs-hero{padding:clamp(2.5rem,5vw,5rem) 4vw clamp(2rem,4vw,3.5rem);border-bottom:1px solid var(--border)}
+.cs-hero-meta{display:flex;gap:.5rem;margin-bottom:1.25rem;flex-wrap:wrap}
+.cs-title{font-family:var(--primary-font);font-size:clamp(2rem,4.5vw,3.8rem);letter-spacing:-.03em;line-height:1.1;max-width:800px;margin-bottom:1.25rem}
+.cs-subtitle{font-size:clamp(.95rem,1.5vw,1.1rem);line-height:1.7;color:var(--muted);max-width:640px;margin-bottom:2rem}
+.cs-meta-bar{display:flex;gap:2rem;flex-wrap:wrap}
+.cs-label{font-size:.68rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.cs-val{font-size:.9rem;font-weight:500}
+.cs-cover-placeholder{width:100%;aspect-ratio:21/9;display:flex;align-items:center;justify-content:center;font-family:var(--primary-font);font-size:clamp(3rem,9vw,10rem);color:rgba(15,14,12,.08);font-style:italic;letter-spacing:-.05em}
+[data-theme="dark"] .cs-cover-placeholder{color:rgba(240,237,230,.06)}
+.cs-body{max-width:760px;margin:0 auto;padding:clamp(2.5rem,5vw,5rem) 4vw}
+.cs-section{margin-bottom:3.5rem}
+.cs-h2{font-family:var(--primary-font);font-size:clamp(1.5rem,2.8vw,2.2rem);letter-spacing:-.02em;margin-bottom:1.25rem}
+.cs-p{font-size:1rem;line-height:1.8;color:#3a3830;margin-bottom:1.25rem;transition:color .3s}
+.cs-highlight{background:var(--cream);border-left:3px solid var(--accent);padding:1.1rem 1.4rem;border-radius:0 6px 6px 0;margin:1.75rem 0;font-size:1rem;line-height:1.7;font-style:italic;color:var(--ink);transition:background .3s,color .3s}
+.cs-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:2.25rem 0}
+.cs-stat{background:var(--cream);border-radius:8px;padding:1.4rem;text-align:center;border:1px solid var(--border);transition:background .3s,border-color .3s}
+.cs-stat .big{font-family:var(--primary-font);font-size:2.4rem;color:var(--accent);line-height:1}
+.cs-stat .sm{font-size:.75rem;color:var(--muted);margin-top:.4rem;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.cs-img-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:2rem 0}
+.cs-img-grid img{display:block;width:100%;height:auto;max-height:640px;object-fit:contain;border-radius:8px;border:1px solid var(--border);background:var(--cream)}
+.cs-flow-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:1.5rem;margin:2rem 0}
+.cs-flow-grid img{display:block;width:100%;height:auto;max-height:none;object-fit:initial;border-radius:8px;border:1px solid var(--border);background:var(--cream)}
+.journey-flow-diagram{margin:2rem 0;padding:clamp(1rem,3vw,2rem);border:1px solid var(--border);border-radius:10px;background:var(--cream);transition:background .3s,border-color .3s}
+.journey-flow__title{font-family:var(--primary-font);font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:1.25rem}
+.journey-flow{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.5rem;margin:0;padding:0}
+.journey-step{position:relative;min-height:118px;display:flex;flex-direction:column;justify-content:center;gap:.5rem;padding:1.15rem 1.25rem;border:1px solid var(--border);border-radius:8px;background:var(--paper);color:var(--ink);font-size:.93rem;font-weight:600;line-height:1.35;transition:background .3s,border-color .3s,color .3s}
+.journey-step::after{content:'→';position:absolute;top:50%;right:-1.35rem;transform:translate(50%,-50%);z-index:1;color:var(--muted);font-size:1.2rem;font-weight:400}
+.journey-step:nth-child(3n)::after{content:'↓';top:auto;right:50%;bottom:-1.45rem;transform:translate(50%,0)}
+.journey-step:last-child::after{content:none}
+.journey-step__index{font-size:.67rem;font-weight:700;letter-spacing:.1em;color:var(--muted)}
+.journey-step__detail{font-size:.78rem;font-weight:400;line-height:1.5;color:var(--muted)}
+.journey-step--start,.journey-step--complete{border-color:transparent;background:var(--accent);color:#fff}
+.journey-step--start .journey-step__index,.journey-step--complete .journey-step__index,.journey-step--complete .journey-step__detail{color:rgba(255,255,255,.78)}
+.journey-step--decision{border-color:rgba(200,64,26,.3);background:color-mix(in srgb,var(--accent) 10%,var(--paper))}
+.journey-step--friction{border-color:rgba(200,64,26,.2);background:color-mix(in srgb,#e96b64 12%,var(--paper))}
+.journey-options{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem}
+.journey-options span{padding:.3rem .5rem;border:1px solid var(--border);border-radius:999px;font-size:.68rem;font-weight:500;line-height:1.2;color:var(--muted);background:var(--cream)}
+.cs-list{padding-left:1.25rem;color:var(--ink);line-height:1.75}
+.cs-list li{padding:.25rem 0}
+.cs-img-block{aspect-ratio:4/3;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--primary-font);font-size:1.4rem;color:rgba(15,14,12,.15);font-style:italic;transition:border-color .3s}
+[data-theme="dark"] .cs-img-block{color:rgba(240,237,230,.12)}
+.cs-img-block.tall{aspect-ratio:3/4}
+.cs-img-block.wide{grid-column:span 2;aspect-ratio:16/7}
+.cs-nav-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;padding:2.5rem 4vw 3.5rem;border-top:1px solid var(--border)}
+.cs-nav-card{padding:1.4rem;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .2s,transform .2s,background .3s;background:transparent;font-family:var(--secondary-font);text-align:left}
+.cs-nav-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.cs-nav-card.right{text-align:right}
+.cs-nav-dir{font-size:.68rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.cs-nav-title{font-family:var(--primary-font);font-size:1.15rem;letter-spacing:-.02em;color:var(--ink)}
+.process-steps{display:flex;flex-direction:column;gap:1.25rem;margin:1.75rem 0}
+.process-step{display:flex;gap:1.25rem;align-items:flex-start;padding:1.4rem;border:1px solid var(--border);border-radius:8px;background:var(--cream);transition:background .3s,border-color .3s}
+.step-num{font-family:var(--primary-font);font-size:1.5rem;color:var(--accent);line-height:1;flex-shrink:0;width:2.2rem}
+.step-content h4{font-weight:600;margin-bottom:.35rem;font-size:.95rem}
+.step-content p{font-size:.875rem;color:var(--muted);line-height:1.6}
+
+/* ─── RESPONSIVE: TABLET 768–1199px ─────────────────── */
+@media(min-width:768px) and (max-width:1199px){
+  /* Nav */
+  .nav-links{gap:1.4rem}
+  .nav-links a{font-size:.78rem}
+
+  /* Hero — stacked on tablet */
+  #bio{min-height:auto}
+  .hero-left{border-bottom:1px solid var(--border);padding:4rem 8vw 3.5rem;min-height:auto}
+
+  /* Works — 2 col on tablet */
+  .works-grid{grid-template-columns:1fr 1fr;gap:1.1rem}
+  .work-card.featured,.work-card.side,.work-card.full-row{grid-column:span 1}
+
+  /* Contact — stacked */
+  .contact-wrap{grid-template-columns:1fr;gap:2.5rem}
+  .contact-right{position:static}
+
+  /* Case study */
+  .cs-stat-row{grid-template-columns:repeat(3,1fr)}
+  .cs-img-grid{grid-template-columns:1fr 1fr}
+  .cs-img-block.wide{grid-column:span 2}
+  .cs-img-block.tall{aspect-ratio:3/4}
+  .cs-nav-wrap{grid-template-columns:1fr 1fr}
+  .cs-meta-bar{gap:1.75rem}
+}
+
+/* ─── RESPONSIVE: MOBILE ≤767px ─────────────────────── */
+@media(max-width:767px){
+  :root{--nav-h:60px}
+
+  /* Nav — hamburger */
+  .nav-links{display:none}
+  .hamburger{display:flex}
+
+  /* Hero */
+  #bio{min-height:auto}
+  .hero-left{
+    border-bottom:1px solid var(--border);
+    padding:2.5rem 5vw 3rem;
+    min-height:auto;
+  }
+  .hero-name{font-size:clamp(2.6rem,11vw,3.8rem)}
+  .hero-bio{max-width:100%}
+  .hero-pill{font-size:.75rem}
+  .hero-cta{flex-direction:column;gap:.75rem}
+  .btn-primary,.btn-outline{justify-content:center;padding:.9rem 1.5rem}
+
+  /* Framework */
+  .skills-grid{grid-template-columns:1fr}
+  .skill-card{padding:2rem 1.5rem}
+
+  /* Works — single col */
+  .works-grid{grid-template-columns:1fr;gap:1rem}
+  .work-card.featured,.work-card.side,.work-card.full-row{grid-column:span 1}
+  .work-body{padding:1.25rem}
+  .work-title{font-size:1.1rem}
+
+  /* Contact */
+  .contact-wrap{grid-template-columns:1fr;gap:2rem}
+  .contact-right{position:static;padding:1.75rem}
+  .contact-left h2{font-size:clamp(1.8rem,8vw,2.8rem)}
+
+  /* Section */
+  section{padding:3.5rem 5vw}
+  .section-header{margin-bottom:2.5rem}
+  .section-num{display:none}
+
+  /* Case study */
+  .cs-hero{padding:2rem 5vw 1.75rem}
+  .cs-title{font-size:clamp(1.7rem,7vw,2.5rem)}
+  .cs-subtitle{font-size:.95rem}
+  .cs-meta-bar{gap:1.1rem;flex-wrap:wrap}
+  .cs-meta-bar > div{min-width:45%}
+  .cs-body{padding:2rem 5vw}
+  .cs-stat-row{grid-template-columns:1fr;gap:1rem}
+  .cs-img-grid{grid-template-columns:1fr;gap:.75rem}
+  .journey-flow{grid-template-columns:minmax(0,1fr);gap:1rem}
+  .journey-step{min-height:0;padding:1rem 1.1rem}
+  .journey-step::after,.journey-step:nth-child(3n)::after{content:'↓';top:auto;right:50%;bottom:-1.05rem;transform:translate(50%,0)}
+  .journey-step:last-child::after{content:none}
+  .cs-img-block.wide,.cs-img-block.tall{grid-column:span 1;aspect-ratio:16/9}
+  .cs-nav-wrap{grid-template-columns:1fr;padding:2rem 5vw 3rem;gap:1rem}
+  .cs-nav-card.right{text-align:left}
+  .cs-cover-placeholder{aspect-ratio:4/3}
+  .back-btn{font-size:.75rem}
+
+  /* Footer */
+  footer{flex-direction:column;gap:.75rem;text-align:center;padding:1.5rem 5vw}
+}
+
+/* ─── SMALL MOBILE ≤374px ────────────────────────────── */
+@media(max-width:374px){
+  .hero-name{font-size:2.4rem}
+  .nav-logo{font-size:1rem}
+}
+</style>
+</head>
+<body>
+
+<div class="portfolio-dimmer" aria-hidden="true">
+  <div class="portfolio-dimmer-segment" id="dimmer-top"></div>
+  <div class="portfolio-dimmer-segment" id="dimmer-bottom"></div>
+  <div class="portfolio-dimmer-segment" id="dimmer-left"></div>
+  <div class="portfolio-dimmer-segment" id="dimmer-right"></div>
+</div>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ─── NAV ─────────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">Naufal<span>.</span></div>
+  <div class="nav-links" id="desktop-nav">
+    <a onclick="navTo('bio')" data-sec="bio">About</a>
+    <a onclick="navTo('framework')" data-sec="framework">Skills</a>
+    <a onclick="navTo('works')" data-sec="works">Works</a>
+    <a onclick="navTo('reach')" data-sec="reach">Contact</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+      <span class="icon-moon">🌙</span>
+      <span class="knob"></span>
+      <span class="icon-sun">☀️</span>
+    </button>
+    <button class="hamburger" id="hamburger" aria-label="Menu" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mob-menu" id="mob-menu">
+  <a onclick="mobNavTo('bio')">About</a>
+  <div class="mob-divider"></div>
+  <a onclick="mobNavTo('framework')">Skills</a>
+  <div class="mob-divider"></div>
+  <a onclick="mobNavTo('works')">Works</a>
+  <div class="mob-divider"></div>
+  <a onclick="mobNavTo('reach')">Contact</a>
+</div>
+
+<!-- ====== HOME ====== -->
+<div class="page active" id="page-home">
+
+  <section id="bio" style="padding-top:var(--nav-h);padding-left:0;padding-right:0;padding-bottom:0">
+    <div class="hero-left">
+      <div class="hero-tag">UI/UX & Graphic Design</div>
+      <h1 class="hero-name">Naufal<br><em>Rifqi.</em></h1>
+      <p class="hero-bio">I'm a designer with 4+ years shaping digital products across fintech, NGOs, and consumer apps. I turn complex stories into interfaces people actually want to use.</p>
+      <div class="hero-pill"><span class="dot"></span>&nbsp;Currently @ Superbank Indonesia</div>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="navTo('works')">View Works ↓</button>
+        <a href="Experience/Muhamad%20Naufal%20Rifqi%20CV%20_1_.pdf" target="_blank" rel="noopener" class="btn-outline">My Resume →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="framework">
+    <div class="section-header">
+      <h2 class="section-title">My Framework</h2>
+      <span class="section-num">02 / Skills</span>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card reveal"><span class="skill-icon">🧠</span><div class="skill-name">Research & Strategy</div><p class="skill-desc">From user interviews to heuristic evaluations — I build products on real insight, not assumptions.</p><div class="skill-tags"><span class="skill-tag">User Research</span><span class="skill-tag">Usability Testing</span><span class="skill-tag">Journey Mapping</span></div></div>
+      <div class="skill-card reveal"><span class="skill-icon">✏️</span><div class="skill-name">UI Design</div><p class="skill-desc">Pixel-precise interfaces and scalable design systems. I obsess over components, spacing, and consistency.</p><div class="skill-tags"><span class="skill-tag">Figma</span><span class="skill-tag">Design Systems</span><span class="skill-tag">Prototyping</span></div></div>
+      <div class="skill-card reveal"><span class="skill-icon">🎨</span><div class="skill-name">Graphic Design</div><p class="skill-desc">Brand identities, campaign visuals, and editorial layouts that communicate at a glance.</p><div class="skill-tags"><span class="skill-tag">Illustrator</span><span class="skill-tag">Photoshop</span><span class="skill-tag">Brand Identity</span></div></div>
+      <div class="skill-card reveal"><span class="skill-icon">🔗</span><div class="skill-name">Dev Handoff</div><p class="skill-desc">I speak enough frontend to hand off specs developers actually love — annotated, tokenized, and motion-ready.</p><div class="skill-tags"><span class="skill-tag">Framer</span><span class="skill-tag">HTML/CSS</span><span class="skill-tag">Tokens</span></div></div>
+    </div>
+  </section>
+
+  <section id="works" style="background:var(--cream)">
+    <div class="section-header"><h2 class="section-title">Selected Works</h2><span class="section-num">03 / Projects</span></div>
+    <div class="works-grid">
+
+      <div class="work-card featured reveal" onclick="showPage('ovo')">
+        <div class="work-img"><div class="work-img-placeholder">OVO</div><div class="work-tag-bar"><span class="tag-chip">Fintech</span><span class="tag-chip">UX Design</span></div></div>
+        <div class="work-body"><h3 class="work-title">OVO Nabung by Superbank</h3><p class="work-desc">Bringing high-yield savings into OVO and making everyday spending work with Superbank.</p><div class="work-footer"><span>Q4 2024 · UX Design</span><span class="work-arrow">→</span></div></div>
+      </div>
+      <div class="work-card side reveal" onclick="showPage('pas')">
+        <div class="work-img"><div class="work-img-placeholder">PAS</div><div class="work-tag-bar"><span class="tag-chip">Fintech</span><span class="tag-chip">UX Research</span></div></div>
+        <div class="work-body"><h3 class="work-title">PAS Cash by Superbank</h3><p class="work-desc">A digital lending experience with flexible repayment and clearer borrowing costs.</p><div class="work-footer"><span>Q1 2024 · UX Design</span><span class="work-arrow">→</span></div></div>
+      </div>
+      <div class="work-card full-row reveal" onclick="showPage('btn')">
+        <div class="work-img"><div class="work-img-placeholder">BTN</div><div class="work-tag-bar"><span class="tag-chip">Fintech</span><span class="tag-chip">Concept Proposal</span></div></div>
+        <div class="work-body"><h3 class="work-title">BTN Tunas: Flexible Loan Service for MSME</h3><p class="work-desc">A concept for flexible financial assistance that supports business growth for Indonesian MSMEs.</p><div class="work-footer"><span>Concept proposal · Mobile App</span><span class="work-arrow">→</span></div></div>
+      </div>
+      <div class="work-card full-row reveal" onclick="showPage('ohana')">
+        <div class="work-img"><div class="work-img-placeholder">OHANA</div><div class="work-tag-bar"><span class="tag-chip green">NGO</span><span class="tag-chip">Web Design</span></div></div>
+        <div class="work-body"><h3 class="work-title">OHANA Indonesia — Disability Rights Website</h3><p class="work-desc">An accessible website redesign for an Indonesian disability-rights organization.</p><div class="work-footer"><span>2024 · Website</span><span class="work-arrow">→</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="reach">
+    <div class="section-header"><h2 class="section-title">Reach Me</h2><span class="section-num">04 / Contact</span></div>
+    <div class="contact-wrap">
+      <div class="contact-left reveal">
+        <h2>Let's make something<br><em>great together.</em></h2>
+        <p>Whether you have a project in mind, want to collaborate, or just want to say hi — my inbox is always open.</p>
+        <div class="contact-links">
+          <a href="mailto:nrifqi@gmail.com" class="contact-link"><div class="cl-icon">✉</div><div><div class="cl-label">Email</div><div class="cl-text">nrifqi@gmail.com</div></div></a>
+          <a href="https://linkedin.com/in/naufal-rifqi" target="_blank" class="contact-link"><div class="cl-icon" style="font-size:.82rem;font-weight:700">in</div><div><div class="cl-label">LinkedIn</div><div class="cl-text">linkedin.com/in/naufal-rifqi</div></div></a>
+          <a href="https://behance.net/naufal" target="_blank" class="contact-link"><div class="cl-icon" style="font-size:.82rem;font-weight:700">Be</div><div><div class="cl-label">Behance</div><div class="cl-text">behance.net/naufal</div></div></a>
+        </div>
+      </div>
+      <div class="contact-right reveal">
+        <h3>Send a message</h3>
+        <div id="contact-form">
+          <div class="form-group"><label>Your Name</label><input type="text" placeholder="Jane Doe" id="f-name"></div>
+          <div class="form-group"><label>Email</label><input type="email" placeholder="jane@company.com" id="f-email"></div>
+          <div class="form-group"><label>What's on your mind?</label><textarea rows="4" placeholder="Tell me about your project..." id="f-msg"></textarea></div>
+          <button class="form-submit" onclick="submitForm()">Send Message →</button>
+        </div>
+        <div class="form-success" id="form-success">
+          <div class="check">✅</div>
+          <p style="color:var(--paper);font-size:1.05rem;font-weight:500;margin-bottom:.5rem">Message sent!</p>
+          <p style="color:rgba(240,237,230,.6);font-size:.88rem;line-height:1.6">Thanks for reaching out. I'll get back to you within 1–2 business days.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer><div>Made with ☕ and crackers · <strong>Naufal Rifqi</strong> © 2025</div><div><a href="mailto:nrifqi@gmail.com">nrifqi@gmail.com</a></div></footer>
+</div>
+
+<!-- ====== BTN CASE STUDY ====== -->
+<!-- ====== OVO NABUNG CASE STUDY ====== -->
+<div class="page" id="page-ovo">
+  <div class="case-study-page">
+    <div class="cs-hero">
+      <button class="back-btn" onclick="showPage('home','works')">← Back to Works</button>
+      <div class="cs-hero-meta"><span class="tag-chip">Fintech</span><span class="tag-chip">UX Design</span><span class="tag-chip">UX Research</span></div>
+      <h1 class="cs-title">OVO Nabung by Superbank</h1>
+      <p class="cs-subtitle">Connecting everyday payments with high-yield savings through a joined-up OVO and Superbank experience.</p>
+      <div class="cs-meta-bar">
+        <div><div class="cs-label">Role</div><div class="cs-val">UX Designer</div></div>
+        <div><div class="cs-label">Timeline</div><div class="cs-val">Q4 2024</div></div>
+        <div><div class="cs-label">Team</div><div class="cs-val">3 UX Designers · 1 UX Writer · 3 Project Managers</div></div>
+        <div><div class="cs-label">Focus</div><div class="cs-val">Savings · Payments · Ecosystem integration</div></div>
+      </div>
+    </div>
+    <div class="cs-cover-placeholder" style="background:linear-gradient(135deg,#d8e8df,#b4d4c4)">OVO</div>
+    <div class="cs-body">
+      <div class="cs-section"><h2 class="cs-h2">The opportunity</h2><p class="cs-p">Everyday e-wallet balances are convenient for spending, but they do not earn interest. Moving savings into another banking app can mean extra KYC, app switching, and manual transfers. OVO Nabung brought a high-yield savings product into the OVO ecosystem, with a 5% p.a. interest rate documented in the project brief.</p></div>
+      <div class="cs-section"><h2 class="cs-h2">My contribution</h2><p class="cs-p">I focused on the experience inside the Superbank app: the savings dashboard, Saku setup and management, QRIS and transfer flows, and transaction history. I also worked with the OVO team on shared terminology, design tokens, error states, and deep links between the two apps.</p></div>
+      <div class="cs-section"><h2 class="cs-h2">Designing across two apps</h2><div class="process-steps"><div class="process-step"><div class="step-num">01</div><div class="step-content"><h4>Connect the journey</h4><p>Design handoff and return states so users can move between OVO onboarding and Superbank with clear next steps.</p></div></div><div class="process-step"><div class="step-num">02</div><div class="step-content"><h4>Organize savings</h4><p>Use Saku to separate savings while keeping eligible funds connected to everyday payments.</p></div></div><div class="process-step"><div class="step-num">03</div><div class="step-content"><h4>Keep payment context</h4><p>Make funding-source choices, balances, and transaction outcomes understandable within QRIS and transfer flows.</p></div></div></div></div>
+      <div class="cs-section"><h2 class="cs-h2">Outcome</h2><div class="cs-stat-row"><div class="cs-stat"><div class="big">+1M</div><div class="sm">Registered users after 60 days</div></div><div class="cs-stat"><div class="big">60%</div><div class="sm">Users from OVO Nabung integration</div></div><div class="cs-stat"><div class="big">2.3M+</div><div class="sm">Total OVO Nabung users reported</div></div></div><p class="cs-source-note">Project brief also reports 3× offline merchant transaction growth and more than doubled usage across GrabFood, GrabBike, and GrabCar.</p></div>
+      <div class="cs-section"><h2 class="cs-h2">Reflection</h2><p class="cs-p">Ecosystem experiences depend on clear handoffs across products. Post-launch feedback highlighted that some users still needed help understanding how interest and balances worked between OVO and Superbank, making clear value communication an ongoing design need.</p></div>
+    </div>
+    <div class="cs-nav-wrap"><button class="cs-nav-card" onclick="showPage('pas')"><div class="cs-nav-dir">Next Project →</div><div class="cs-nav-title">PAS Cash by Superbank</div></button></div>
+    <footer><div>Made with ☕ · <strong>Naufal Rifqi</strong> © 2025</div><a href="mailto:nrifqi@gmail.com" style="color:rgba(240,237,230,.4)">nrifqi@gmail.com</a></footer>
+  </div>
+</div>
+
+<!-- ====== PAS CASH CASE STUDY ====== -->
+<div class="page" id="page-pas">
+  <div class="case-study-page">
+    <div class="cs-hero">
+      <button class="back-btn" onclick="showPage('home','works')">← Back to Works</button>
+      <div class="cs-hero-meta"><span class="tag-chip">Fintech</span><span class="tag-chip">UX Design</span><span class="tag-chip">UX Research</span></div>
+      <h1 class="cs-title">PAS Cash by Superbank</h1>
+      <p class="cs-subtitle">Making digital borrowing more flexible and transparent for people with different income cycles.</p>
+      <div class="cs-meta-bar">
+        <div><div class="cs-label">Role</div><div class="cs-val">UX Designer</div></div>
+        <div><div class="cs-label">Timeline</div><div class="cs-val">Q1 2024</div></div>
+        <div><div class="cs-label">Team</div><div class="cs-val">1 UX Writer · 2 UX Designers · 2 Project Managers</div></div>
+        <div><div class="cs-label">Product</div><div class="cs-val">Unsecured digital lending</div></div>
+      </div>
+    </div>
+    <div class="cs-cover-placeholder" style="background:linear-gradient(135deg,#eadfd2,#d7c2a9)">PAS</div>
+    <div class="cs-body">
+      <div class="cs-section"><h2 class="cs-h2">The challenge</h2><p class="cs-p">PAS Cash (Pinjaman Atur Sendiri) is Superbank’s unsecured digital loan product. The project brief identifies three common pain points: rigid repayment schedules, unclear fees, and lengthy applications. PAS was integrated into partner ecosystems including Grab and OVO.</p></div>
+      <div class="cs-section"><h2 class="cs-h2">Designing for control and clarity</h2><div class="process-steps"><div class="process-step"><div class="step-num">01</div><div class="step-content"><h4>Choose a repayment date</h4><p>A loan slider lets users set an amount and preferred repayment date; daily interest is shown as the amount changes.</p></div></div><div class="process-step"><div class="step-num">02</div><div class="step-content"><h4>Explain the full cost</h4><p>A structured summary separates the amount disbursed from total repayment before confirmation.</p></div></div><div class="process-step"><div class="step-num">03</div><div class="step-content"><h4>Support repayment over time</h4><p>Dashboard hierarchy, timely reminder cards, and individual early repayment options help users manage what they owe.</p></div></div></div></div>
+      <div class="cs-section"><h2 class="cs-h2">Reported business outcomes</h2><div class="cs-stat-row"><div class="cs-stat"><div class="big">2.10%</div><div class="sm">Gross NPL in 2025, down from 3.80% in 2023</div></div><div class="cs-stat"><div class="big">+4M</div><div class="sm">Active users across PAS and GROVO integration</div></div><div class="cs-stat"><div class="big">Rp6.2T</div><div class="sm">Gross loan disbursements, up from Rp2.92T</div></div></div></div>
+      <div class="cs-section"><h2 class="cs-h2">What I learned</h2><p class="cs-p">Showing fees upfront can build trust, while showing too many figures at once can overwhelm people. The design challenge is to preserve full transparency while making the next decision easy to understand.</p></div>
+    </div>
+    <div class="cs-nav-wrap"><button class="cs-nav-card" onclick="showPage('btn')"><div class="cs-nav-dir">Next Project →</div><div class="cs-nav-title">BTN Tunas</div></button></div>
+    <footer><div>Made with ☕ · <strong>Naufal Rifqi</strong> © 2025</div><a href="mailto:nrifqi@gmail.com" style="color:rgba(240,237,230,.4)">nrifqi@gmail.com</a></footer>
+  </div>
+</div>
+<div class="page" id="page-btn">
+  <div class="case-study-page">
+    <div class="cs-hero">
+      <button class="back-btn" onclick="showPage('home','works')">← Back to Works</button>
+      <div class="cs-hero-meta"><span class="tag-chip">Fintech</span><span class="tag-chip">UI/UX</span><span class="tag-chip">Concept Proposal</span></div>
+      <h1 class="cs-title">BTN Tunas: Flexible Loan Service for MSME</h1>
+      <p class="cs-subtitle">A concept for flexible financial assistance that supports business growth for micro, small, and medium-sized enterprises in Indonesia.</p>
+      <div class="cs-meta-bar">
+        <div><div class="cs-label">Project</div><div class="cs-val">Concept proposal</div></div>
+        <div><div class="cs-label">Focus</div><div class="cs-val">Onboarding · Loan access · Repayment</div></div>
+        <div><div class="cs-label">Research</div><div class="cs-val">Qualitative interviews · 5 users</div></div>
+      </div>
+    </div>
+    <div class="cs-cover-placeholder" style="background:linear-gradient(135deg,#e8ddd0,#d4c9bb)">BTN</div>
+    <div class="cs-body">
+      <div class="cs-section"><h2 class="cs-h2">Overview</h2><p class="cs-p">BTN (Bank Tabungan Negara) is a state-owned bank that provides funding to individual and business customers. To reach entrepreneurs across Indonesia, BTN proposed a platform for MSMEs to access flexible financial assistance that supports business growth.</p><p class="cs-source-note"><strong>Disclaimer:</strong> This project was created strictly as a concept proposal.</p></div>
+      <div class="cs-section"><h2 class="cs-h2">Business Goals</h2><div class="process-steps"><div class="process-step"><div class="step-num">01</div><div class="step-content"><p>Improve onboarding by removing unnecessary steps and increasing conversion.</p></div></div><div class="process-step"><div class="step-num">02</div><div class="step-content"><p>Provide access to flexible financial solutions.</p></div></div><div class="process-step"><div class="step-num">03</div><div class="step-content"><p>Make fund distribution more efficient.</p></div></div></div></div>
+      <div class="cs-section"><h2 class="cs-h2">User Need &amp; Problem</h2><p class="cs-p">Many users want loans to grow their businesses, but loan providers—especially banks—often require collateral for business loans. Applications may also require in-person visits to physical offices, which are difficult for entrepreneurs to fit around their operations.</p><div class="cs-highlight"><strong>How might we</strong> offer financial services and loans that are easy to use, avoid burdensome requirements, and adapt to each user’s business performance?</div><div class="cs-img-grid"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181022.png" alt="BTN Tunas user needs and problem framing"></div></div>
+      <div class="cs-section"><h2 class="cs-h2">Proposed Direction</h2><p class="cs-p">The proposed direction was a loan-channeling app with flexible options and insights to help users grow their businesses over the long term. Ideas were generated and narrowed around the problem statement, then prioritized to focus feature development.</p><div class="cs-img-grid"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181050.png" alt="BTN Tunas idea exploration"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181117.png" alt="BTN Tunas feature prioritization"></div></div>
+      <div class="cs-section"><h2 class="cs-h2">Core User Flow</h2><p class="cs-p">The main experience centers on onboarding, accessing a loan limit, and repaying a loan. Repayment includes flexible repayment and full repayment options to make the service’s flexibility clear to users.</p><figure class="journey-figure"><div class="journey-flow-diagram"><p class="journey-flow__title">BTN Tunas onboarding journey</p><ol class="journey-flow" aria-label="BTN Tunas onboarding journey"><li class="journey-step journey-step--start"><span class="journey-step__index">01 · START</span>Open app<span class="journey-step__detail">Begin the onboarding process.</span></li><li class="journey-step"><span class="journey-step__index">02</span>Verify phone number<span class="journey-step__detail">Input phone number, receive SMS OTP, and confirm OTP.</span></li><li class="journey-step"><span class="journey-step__index">03</span>Set up PIN<span class="journey-step__detail">Create and confirm PIN, then choose whether to enable biometrics.</span></li><li class="journey-step journey-step--decision"><span class="journey-step__index">04 · ACCOUNT CHECK</span>Check existing account?<span class="journey-options"><span>Yes · Use existing account</span><span>No · Continue with OCR</span></span></li><li class="journey-step"><span class="journey-step__index">05</span>Confirm account or scan ID<span class="journey-step__detail">Confirm an existing account, or use OCR to read identity details.</span></li><li class="journey-step"><span class="journey-step__index">06</span>Complete details<span class="journey-step__detail">Fill in personal data, additional data, and business details.</span></li><li class="journey-step journey-step--friction"><span class="journey-step__index">07</span>Accept terms and verify identity<span class="journey-step__detail">Review T&amp;C and complete the selfie step.</span></li><li class="journey-step"><span class="journey-step__index">08</span>Open and sync account<span class="journey-step__detail">Account opening and synchronization take place.</span></li><li class="journey-step journey-step--complete"><span class="journey-step__index">09 · COMPLETE</span>Success · Home<span class="journey-step__detail">Reach the BTN Tunas home screen.</span></li></ol></div><figcaption class="figure-caption" style="margin:0 1rem 1rem;color:var(--muted);font-size:.78rem;line-height:1.5">The onboarding flow moves from phone verification through account checks and identity details to account opening.</figcaption></figure><div class="cs-flow-grid"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181130.png" alt="Detailed BTN Tunas onboarding flow"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181140.png" alt="BTN Tunas loan access flow"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181148.png" alt="BTN Tunas repayment flow"></div></div>
+      <div class="cs-section"><h2 class="cs-h2">Wireframing &amp; Testing</h2><p class="cs-p">The flow was translated into wireframes to visualize app touchpoints and validate the experience before high-fidelity design. The wireframe proposal was aligned with stakeholders against business and product goals.</p><p class="cs-p">Qualitative interviews included five users aged 18–35, male and female, with experience using financial apps. Participants included financially savvy people, entrepreneurs, and digital nomads.</p><div class="cs-img-grid"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181252.png" alt="BTN Tunas wireframes"></div></div>
+      <div class="cs-section"><h2 class="cs-h2">Testing Results</h2><div class="cs-img-grid"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181344.png" alt="BTN Tunas user testing findings"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181358.png" alt="BTN Tunas user testing feedback"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181410.png" alt="BTN Tunas usability testing synthesis"></div><ul class="cs-list"><li><strong>3 of 5</strong> users were concerned that onboarding took too long, while recognizing this is common in banking and financial apps.</li><li><strong>4 of 5</strong> were willing to provide business details but unsure how the bank would use that data.</li><li><strong>5 of 5</strong> wanted disbursement broken into steps to reduce confusion while entering details.</li><li><strong>3 of 5</strong> understood that paying from the home screen covered only the installment due in that period.</li><li><strong>5 of 5</strong> could find their latest transaction easily.</li><li><strong>5 of 5</strong> understood that flexible repayment was available from the loan-detail page.</li></ul></div>
+      <div class="cs-section"><h2 class="cs-h2">Final Product</h2><p class="cs-p">After testing and design iterations, the final product was described as meeting stakeholder and user needs.</p><div class="cs-img-grid"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181425.png" alt="BTN Tunas final product screens"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181432.png" alt="BTN Tunas final product screens"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181442.png" alt="BTN Tunas final product screens"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181450.png" alt="BTN Tunas final product screens"><img src="Projects/BTN%20Tunas%20App%20Concept/pasted-20260929-181500.png" alt="BTN Tunas final product screens"></div></div>
+      <div class="cs-section"><h2 class="cs-h2">Lessons Learned</h2><ul class="cs-list"><li>Data-driven solutions can help manage stakeholder decisions, make a case for a direction, and clarify business impact.</li><li>Flexible financial services for MSMEs can help businesses grow and encourage them to seek support from financial-service providers.</li><li>Too many repayment choices can add complexity. Pairing a limited set of flexible options with guided actions may preserve flexibility while making the experience easier to understand.</li></ul></div>
+    </div>
+    <div class="cs-nav-wrap"><button class="cs-nav-card" onclick="showPage('ohana')"><div class="cs-nav-dir">Next Project →</div><div class="cs-nav-title">Ohana Indonesia</div></button></div>
+    <footer><div>Made with ☕ · <strong>Naufal Rifqi</strong> © 2025</div><a href="mailto:nrifqi@gmail.com" style="color:rgba(240,237,230,.4)">nrifqi@gmail.com</a></footer>
+  </div>
+</div>
+
+<!-- ====== OHANA CASE STUDY ====== -->
+<div class="page" id="page-ohana">
+  <div class="case-study-page">
+    <div class="cs-hero">
+      <button class="back-btn" onclick="showPage('home','works')">← Back to Works</button>
+      <div class="cs-hero-meta"><span class="tag-chip green">NGO</span><span class="tag-chip">Web Design</span><span class="tag-chip">Accessibility</span></div>
+      <h1 class="cs-title">Accessible Website to Promote Disability Rights Awareness with Ohana Indonesia</h1>
+      <p class="cs-subtitle">A fresh, inclusive redesign for Indonesia's leading disability rights NGO — built for everyone, including the people they advocate for.</p>
+      <div class="cs-meta-bar">
+        <div><div class="cs-label">Role</div><div class="cs-val">UI/UX & Web Designer</div></div>
+        <div><div class="cs-label">Year</div><div class="cs-val">2024</div></div>
+        <div><div class="cs-label">Duration</div><div class="cs-val">3 months</div></div>
+        <div><div class="cs-label">Tools</div><div class="cs-val">Figma · Framer · Lighthouse</div></div>
+      </div>
+    </div>
+    <div class="cs-cover-placeholder" style="background:linear-gradient(135deg,#d8e0d4,#c5d0bf)">OI</div>
+    <div class="cs-body">
+      <div class="cs-section"><h2 class="cs-h2">Overview</h2><p class="cs-p">Ohana Indonesia is a non-governmental organization dedicated to advocating for disability rights. As a long-time client, they needed a modern redesign that reflected their mission while dramatically improving accessibility — for their staff, their community, and the people they serve.</p><div class="cs-highlight">Accessibility isn't a feature — it's a foundation. Every design decision was evaluated through the lens of WCAG 2.1 AA compliance and real user impact.</div></div>
+      <div class="cs-section"><h2 class="cs-h2">Impact</h2><div class="cs-stat-row"><div class="cs-stat"><div class="big">AA</div><div class="sm">WCAG Compliant</div></div><div class="cs-stat"><div class="big">94</div><div class="sm">Lighthouse Score</div></div><div class="cs-stat"><div class="big">2.4×</div><div class="sm">Session Duration</div></div></div></div>
+      <div class="cs-section"><h2 class="cs-h2">Process</h2><div class="process-steps"><div class="process-step"><div class="step-num">01</div><div class="step-content"><h4>Accessibility Audit</h4><p>Ran a full WCAG audit of the existing site. Found 47 critical issues including contrast failures, missing alt text, and keyboard-inaccessible navigation.</p></div></div><div class="process-step"><div class="step-num">02</div><div class="step-content"><h4>Co-design with Users</h4><p>Worked with 6 participants across visual, motor, and cognitive disability groups to co-design navigation patterns and content hierarchy.</p></div></div><div class="process-step"><div class="step-num">03</div><div class="step-content"><h4>Design & Build</h4><p>Created an accessible design system in Figma — high-contrast tokens, scalable type, focus states — then implemented it in Framer with semantic HTML.</p></div></div></div></div>
+      <div class="cs-section"><h2 class="cs-h2">Key Screens</h2><div class="cs-img-grid"><div class="cs-img-block" style="background:linear-gradient(135deg,#d8e0d4,#c5d0bf)">Homepage</div><div class="cs-img-block" style="background:linear-gradient(135deg,#cdd8c8,#bccdb5)">About Page</div><div class="cs-img-block wide" style="background:linear-gradient(135deg,#c8d4c4,#b8c8b0)">Programs Directory</div></div></div>
+    </div>
+    <div class="cs-nav-wrap"><button class="cs-nav-card" onclick="showPage('btn')"><div class="cs-nav-dir">← Previous Project</div><div class="cs-nav-title">BTN Tunas</div></button></div>
+    <footer><div>Made with ☕ · <strong>Naufal Rifqi</strong> © 2025</div><a href="mailto:nrifqi@gmail.com" style="color:rgba(240,237,230,.4)">nrifqi@gmail.com</a></footer>
+  </div>
+</div>
+
+<script>
+/* ─── THEME ──────────────────────────────────────────── */
+const saved = localStorage.getItem('theme');
+if(saved) document.documentElement.setAttribute('data-theme', saved);
+
+function toggleTheme(){
+  const curr = document.documentElement.getAttribute('data-theme');
+  const next = curr === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}
+
+/* ─── MOBILE MENU ────────────────────────────────────── */
+let menuOpen = false;
+function toggleMenu(){
+  menuOpen = !menuOpen;
+  document.getElementById('mob-menu').classList.toggle('open', menuOpen);
+  document.getElementById('hamburger').classList.toggle('open', menuOpen);
+  document.body.style.overflow = menuOpen ? 'hidden' : '';
+}
+function closeMenu(){
+  menuOpen = false;
+  document.getElementById('mob-menu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function mobNavTo(sec){
+  closeMenu();
+  showPage('home', sec);
+}
+
+/* ─── ROUTING ────────────────────────────────────────── */
+function showPage(id, scrollTo){
+  hoveredPortfolioCard = null;
+  document.body.classList.remove('card-hovering');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if(!page) return;
+  page.classList.add('active');
+  window.scrollTo({top:0, behavior:'instant'});
+  closeMenu();
+  if(scrollTo && id === 'home'){
+    setTimeout(() => {
+      const el = document.getElementById(scrollTo);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 80);
+  }
+  setTimeout(() => { initReveals(); refreshCursorTargets(); }, 60);
+}
+
+function navTo(secId){
+  const homeActive = document.getElementById('page-home').classList.contains('active');
+  if(homeActive){
+    const el = document.getElementById(secId);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  } else {
+    showPage('home', secId);
+  }
+}
+
+/* ─── FORM ───────────────────────────────────────────── */
+function submitForm(){
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  if(!name || !email){ alert('Please fill in your name and email.'); return; }
+  document.getElementById('contact-form').style.display = 'none';
+  document.getElementById('form-success').style.display = 'block';
+}
+
+/* ─── CURSOR (desktop only) ──────────────────────────── */
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0, my=0, rx=0, ry=0;
+if(cursor && ring){
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx+'px'; cursor.style.top = my+'px';
+  });
+  (function animRing(){
+    rx += (mx-rx)*.12; ry += (my-ry)*.12;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(animRing);
+  })();
+}
+
+function refreshCursorTargets(){
+  if(!cursor) return;
+  document.querySelectorAll('a,button,.work-card,.skill-card,.contact-link,.cs-nav-card,.back-btn,.nav-logo').forEach(el => {
+    if(el._cur) return; el._cur = true;
+    el.addEventListener('mouseenter', () => { cursor.style.width='20px'; cursor.style.height='20px'; ring.style.width='52px'; ring.style.height='52px'; ring.style.opacity='.5'; });
+    el.addEventListener('mouseleave', () => { cursor.style.width='12px'; cursor.style.height='12px'; ring.style.width='36px'; ring.style.height='36px'; ring.style.opacity='1'; });
+  });
+}
+
+/* ─── PORTFOLIO CARD HOVER ──────────────────────────── */
+let hoveredPortfolioCard = null;
+function updatePortfolioDimmer(){
+  if(!hoveredPortfolioCard) return;
+  const rect = hoveredPortfolioCard.getBoundingClientRect();
+  const top = document.getElementById('dimmer-top');
+  const bottom = document.getElementById('dimmer-bottom');
+  const left = document.getElementById('dimmer-left');
+  const right = document.getElementById('dimmer-right');
+  top.style.cssText = `left:0;top:0;width:100%;height:${Math.max(0,rect.top)}px`;
+  bottom.style.cssText = `left:0;top:${Math.min(innerHeight,rect.bottom)}px;width:100%;height:${Math.max(0,innerHeight-rect.bottom)}px`;
+  left.style.cssText = `left:0;top:${Math.max(0,rect.top)}px;width:${Math.max(0,rect.left)}px;height:${Math.max(0,Math.min(innerHeight,rect.bottom)-Math.max(0,rect.top))}px`;
+  right.style.cssText = `left:${Math.min(innerWidth,rect.right)}px;right:0;top:${Math.max(0,rect.top)}px;height:${Math.max(0,Math.min(innerHeight,rect.bottom)-Math.max(0,rect.top))}px`;
+}
+document.querySelectorAll('.work-card').forEach(card => {
+  card.addEventListener('mouseenter', () => {
+    hoveredPortfolioCard = card;
+    updatePortfolioDimmer();
+    document.body.classList.add('card-hovering');
+  });
+  card.addEventListener('mouseleave', () => {
+    hoveredPortfolioCard = null;
+    document.body.classList.remove('card-hovering');
+  });
+});
+window.addEventListener('resize', updatePortfolioDimmer);
+window.addEventListener('scroll', updatePortfolioDimmer, true);
+window.addEventListener('touchstart', () => {
+  hoveredPortfolioCard = null;
+  document.body.classList.remove('card-hovering');
+}, {passive:true});
+
+/* ─── REVEALS ────────────────────────────────────────── */
+function initReveals(){
+  const els = document.querySelectorAll('.page.active .reveal:not(.visible)');
+  if(!els.length) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e,i) => {
+      if(e.isIntersecting){ setTimeout(() => e.target.classList.add('visible'), i*80); obs.unobserve(e.target); }
+    });
+  }, {threshold:0.08});
+  els.forEach(el => obs.observe(el));
+  document.querySelectorAll('.page.active .skill-card:not([data-obs])').forEach((card,i) => {
+    card.setAttribute('data-obs','1');
+    const o = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting){ setTimeout(() => e.target.classList.add('visible'), i*120); o.unobserve(e.target); } });
+    }, {threshold:0.08});
+    o.observe(card);
+  });
+}
+
+/* ─── ACTIVE NAV ─────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+  if(!document.getElementById('page-home').classList.contains('active')) return;
+  let current = '';
+  ['bio','framework','works','reach'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el && window.scrollY >= el.offsetTop - 100) current = id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.sec === current));
+}, {passive:true});
+
+/* ─── INIT ───────────────────────────────────────────── */
+refreshCursorTargets();
+initReveals();
+</script>
+</body>
+</html>

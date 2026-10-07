@@ -1,0 +1,40 @@
+/* Portfolio design tokens.
+ * Typography matches the live portfolio: DM Serif Display and DM Sans.
+ * Load the corresponding Google Fonts stylesheet in each HTML page.
+ */
+:root {
+  color-scheme: light;
+
+  /* Core colors */
+  --ink: #0f0e0c;
+  --paper: #f4f0e8;
+  --cream: #ede8dc;
+  --accent: #c8401a;
+  --accent2: #3a5a40;
+  --muted: #7a776e;
+  --card: #ffffff;
+  --border: rgba(15, 14, 12, 0.1);
+
+  /* Typography */
+  --serif: 'DM Serif Display', serif;
+  --sans: 'DM Sans', sans-serif;
+  --primary-font: var(--serif);
+  --secondary-font: var(--sans);
+
+  /* Layout */
+  --nav-h: 68px;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #f0ede6;
+  --paper: #141210;
+  --cream: #1e1c19;
+  --muted: #9a9690;
+  --card: #1e1c19;
+  --border: rgba(240, 237, 230, 0.1);
+}
+
+@media (max-width: 767px) {
+  :root { --nav-h: 60px; }
+}
