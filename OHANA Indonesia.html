@@ -102,52 +102,75 @@
     document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
     document.getElementById('year').textContent = new Date().getFullYear();
 
+    const cursor = document.createElement('div');
+    const cursorRing = document.createElement('div');
+    cursor.id = 'cursor';
+    cursorRing.id = 'cursor-ring';
+    document.body.append(cursor, cursorRing);
+    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+    document.addEventListener('mousemove', event => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+      cursor.style.left = `${mouseX}px`;
+      cursor.style.top = `${mouseY}px`;
+    });
+    function followCursor() {
+      ringX += (mouseX - ringX) * .12;
+      ringY += (mouseY - ringY) * .12;
+      cursorRing.style.left = `${ringX}px`;
+      cursorRing.style.top = `${ringY}px`;
+      requestAnimationFrame(followCursor);
+    }
+    followCursor();
+    document.querySelectorAll('a, button').forEach(element => {
+      element.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      element.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
 
-
-      let enlargedFigure = null;
-      function closeEnlargedFigure() {
-        if (!enlargedFigure) return;
-        const image = enlargedFigure.querySelector('img');
-        enlargedFigure.classList.remove('is-enlarged');
-        image.setAttribute('aria-expanded', 'false');
-        enlargedFigure.querySelector('.image-enlarger-close')?.remove();
-        image.focus();
-        enlargedFigure = null;
-      }
-      document.querySelectorAll('.case-gallery .case-visual img').forEach(image => {
-        image.tabIndex = 0;
-        image.setAttribute('role', 'button');
-        image.setAttribute('aria-expanded', 'false');
-        image.setAttribute('aria-label', `Enlarge image: ${image.alt || 'project image'}`);
-        image.addEventListener('click', () => {
-          const figure = image.closest('.case-visual');
-          if (enlargedFigure === figure) {
-            closeEnlargedFigure();
-            return;
-          }
+    let enlargedFigure = null;
+    function closeEnlargedFigure() {
+      if (!enlargedFigure) return;
+      const image = enlargedFigure.querySelector('img');
+      enlargedFigure.classList.remove('is-enlarged');
+      image.setAttribute('aria-expanded', 'false');
+      enlargedFigure.querySelector('.image-enlarger-close')?.remove();
+      image.focus();
+      enlargedFigure = null;
+    }
+    document.querySelectorAll('.case-gallery .case-visual img').forEach(image => {
+      image.tabIndex = 0;
+      image.setAttribute('role', 'button');
+      image.setAttribute('aria-expanded', 'false');
+      image.setAttribute('aria-label', `Enlarge image: ${image.alt || 'project image'}`);
+      image.addEventListener('click', () => {
+        const figure = image.closest('.case-visual');
+        if (enlargedFigure === figure) {
           closeEnlargedFigure();
-          enlargedFigure = figure;
-          figure.classList.add('is-enlarged');
-          image.setAttribute('aria-expanded', 'true');
-          const closeButton = document.createElement('button');
-          closeButton.type = 'button';
-          closeButton.className = 'image-enlarger-close';
-          closeButton.setAttribute('aria-label', 'Close enlarged image');
-          closeButton.textContent = '×';
-          closeButton.addEventListener('click', closeEnlargedFigure);
-          figure.append(closeButton);
-          closeButton.focus();
-        });
-        image.addEventListener('keydown', event => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            image.click();
-          }
-        });
+          return;
+        }
+        closeEnlargedFigure();
+        enlargedFigure = figure;
+        figure.classList.add('is-enlarged');
+        image.setAttribute('aria-expanded', 'true');
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.className = 'image-enlarger-close';
+        closeButton.setAttribute('aria-label', 'Close enlarged image');
+        closeButton.textContent = '×';
+        closeButton.addEventListener('click', closeEnlargedFigure);
+        figure.append(closeButton);
+        closeButton.focus();
       });
-      document.addEventListener('keydown', event => {
-        if (event.key === 'Escape') closeEnlargedFigure();
+      image.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          image.click();
+        }
       });
-    </script>
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') closeEnlargedFigure();
+    });
+  </script>
 </body>
 </html>
