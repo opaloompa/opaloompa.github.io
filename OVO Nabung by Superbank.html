@@ -162,6 +162,10 @@
         localStorage.setItem('portfolio-theme', document.documentElement.dataset.theme);
         tb.textContent = isDark ? '☀' : '☾';
         tb.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+        tb.classList.remove('is-switching');
+        void tb.offsetWidth;
+        tb.classList.add('is-switching');
+        window.setTimeout(() => tb.classList.remove('is-switching'), 600);
       });
 
       // Mobile Menu Handling

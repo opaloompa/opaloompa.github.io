@@ -685,6 +685,53 @@ button:focus-visible, a:focus-visible {
   color: var(--accent);
 }
 
+/* Selected writing */
+.articles-section.section { padding: clamp(3rem, 5vw, 4rem) 0; background: var(--paper); }
+.article-list { display: grid; gap: .75rem; }
+.article-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem clamp(1.1rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: transparent;
+  text-decoration: none;
+  transition: transform .25s ease, border-color .25s ease, background .25s ease;
+}
+.article-card:hover, .article-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  background: var(--card);
+}
+.article-label {
+  display: block;
+  margin-bottom: .45rem;
+  color: var(--accent);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.article-card h3 {
+  margin: 0 0 .35rem;
+  font: 700 clamp(1.25rem, 2.2vw, 1.75rem)/1.15 var(--serif);
+  letter-spacing: -.03em;
+}
+.article-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+.article-arrow {
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-size: 1.2rem;
+  transition: transform .3s ease;
+}
+.article-card:hover .article-arrow { transform: translate(3px, -3px); }
+
 /* Contact Section */
 .contact-layout {
   display: grid;

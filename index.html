@@ -89,16 +89,36 @@
       </div>
     </section>
 
+    <section class="section articles-section" id="articles" aria-label="Articles">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Writings</h2>
+          <span class="section-index">03 / Articles</span>
+        </div>
+        <div class="article-list" id="articleList" aria-live="polite">
+          <a class="article-card reveal visible" href="https://opaloompa.substack.com/p/when-the-canvas-gets-bigger" target="_blank" rel="noopener noreferrer">
+            <div class="article-card-copy">
+              <span class="article-label">Substack · Career &amp; craft</span>
+              <h3>When the Canvas Gets Bigger</h3>
+              <p>On experience, ego, and the weight of stepping into the bigger stage.</p>
+            </div>
+            <span class="article-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <p class="all-works"><a href="https://opaloompa.substack.com/" target="_blank" rel="noopener noreferrer">Read on Substack ↗</a></p>
+      </div>
+    </section>
+
     <section class="section reviews-section" id="reviews" aria-label="LinkedIn reviews">
       <div class="wrap">
         <div class="section-head">
           <h2>Kind words</h2>
-          <span class="section-index">03 / LinkedIn reviews</span>
+          <span class="section-index">04 / LinkedIn reviews</span>
         </div>
         <div class="review-slider" aria-roledescription="carousel">
           <div class="review-viewport" id="reviewViewport" aria-live="off">
             <div class="review-track" id="reviewTrack">
-              <article class="review-card"><p>“Naufal is one of the most adaptable people I’ve worked with. At Superbank, he juggles multiple tasks across different streams, always keeping a calm mindset and handling stress like a pro. What really stands out is his ability to connect with people—he’s communicative, fun to work with, and brings a great sense of humor to the team. It’s rare to find someone who’s both highly skilled and genuinely enjoyable to collaborate with, and Naufal is exactly that. I highly recommend him for any role or project that values adaptability, teamwork, and a positive attitude.”</p><div class="review-byline">Aditya Wicaksono <span>·</span>UX Research,Superbank</div></article>
+              <article class="review-card"><p>“Naufal is one of the most adaptable people I’ve worked with. At Superbank, he juggles multiple tasks across different streams, always keeping a calm mindset and handling stress like a pro. What really stands out is his ability to connect with people—he’s communicative, fun to work with, and brings a great sense of humor to the team. It’s rare to find someone who’s both highly skilled and genuinely enjoyable to collaborate with, and Naufal is exactly that. I highly recommend him for any role or project that values adaptability, teamwork, and a positive attitude.”</p><div class="review-byline">Aditya Wicaksono <span>·</span> UX Research, Superbank</div></article>
               <article class="review-card"><p>“Naufal is a very talented individual with a great sense of creativity. A very determined, detail oriented, and also resourceful person. He can manage multiple projects and really helpful on conducting research, wire framing, and also conducting user testing to gain insightful data. A quick learner and also a great team player for sure!”</p><div class="review-byline">Khansa Larasati <span>·</span> Marketing Solutions, Blibli</div></article>
             </div>
           </div>
@@ -174,6 +194,44 @@
     }), { threshold: .12 });
     document.querySelectorAll('.reveal').forEach(element => revealObserver.observe(element));
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    const articleList = document.getElementById('articleList');
+    const substackFeed = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent('https://opaloompa.substack.com/feed');
+    fetch(substackFeed)
+      .then(response => {
+        if (!response.ok) throw new Error('Substack feed unavailable');
+        return response.json();
+      })
+      .then(data => {
+        if (data.status !== 'ok' || !Array.isArray(data.items) || !data.items.length) return;
+        const parser = new DOMParser();
+        const fragment = document.createDocumentFragment();
+        data.items.slice(0, 3).forEach(post => {
+          const card = document.createElement('a');
+          card.className = 'article-card reveal visible';
+          card.href = post.link;
+          card.target = '_blank';
+          card.rel = 'noopener noreferrer';
+          const copy = document.createElement('div');
+          copy.className = 'article-card-copy';
+          const label = document.createElement('span');
+          label.className = 'article-label';
+          label.textContent = 'Substack · ' + (post.categories?.[0] || 'Latest writing');
+          const title = document.createElement('h3');
+          title.textContent = post.title;
+          const description = document.createElement('p');
+          description.textContent = parser.parseFromString(post.description || '', 'text/html').body.textContent.trim().slice(0, 220);
+          const arrow = document.createElement('span');
+          arrow.className = 'article-arrow';
+          arrow.setAttribute('aria-hidden', 'true');
+          arrow.textContent = '↗';
+          copy.append(label, title, description);
+          card.append(copy, arrow);
+          fragment.append(card);
+        });
+        articleList.replaceChildren(fragment);
+      })
+      .catch(() => {});
 
     const reviewTrack = document.getElementById('reviewTrack');
     const reviewViewport = document.getElementById('reviewViewport');

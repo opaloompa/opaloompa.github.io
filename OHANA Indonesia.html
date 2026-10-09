@@ -90,7 +90,7 @@
       themeButton.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
     }
     syncTheme();
-    themeButton.addEventListener('click', () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('portfolio-theme', root.dataset.theme); syncTheme(); });
+    themeButton.addEventListener('click', () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('portfolio-theme', root.dataset.theme); syncTheme(); themeButton.classList.remove('is-switching'); void themeButton.offsetWidth; themeButton.classList.add('is-switching'); window.setTimeout(() => themeButton.classList.remove('is-switching'), 600); });
 
     const menu = document.getElementById('mobileMenu');
     const hamburger = document.getElementById('hamburger');
